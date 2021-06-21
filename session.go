@@ -5854,3 +5854,25 @@ func rdnOIDToShortName(oid asn1.ObjectIdentifier) string {
 
 	return ""
 }
+
+// 检查session 中连接是否已经dead
+func (s *Session) IsDead() bool {
+	if s.masterSocket != nil {
+		s.masterSocket.Lock()
+		if s.masterSocket.dead != nil {
+			s.masterSocket.Unlock()
+			return true
+		}
+		s.masterSocket.Unlock()
+	}
+	if s.slaveSocket != nil {
+		s.slaveSocket.Lock()
+		if s.slaveSocket.dead != nil {
+			s.slaveSocket.Unlock()
+			return true
+		}
+		s.slaveSocket.Unlock()
+	}
+
+	return false
+}
